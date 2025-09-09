@@ -112,10 +112,13 @@ public sealed class Lexer(string source)
         {
             if (Peek() == Lexemes.LineFeed) Line++;
 
+            // Safely unwinds the recursion (and the loop) at the end of the file
+            // in case the end comment mark (*/) is missing.
             if (IsAtEnd()) break;
 
             char c = Advance();
 
+            // Recursively scans nested block comments.
             if (c == Lexemes.ForwardSlash && Peek() == Lexemes.Star)
                 ScanBlockComment();
         }
