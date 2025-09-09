@@ -1,30 +1,41 @@
 ﻿using Party.Constants;
 using Party.Core;
+using Party.Core.Expressions;
 
 namespace Party;
 
 internal class Program
 {
-    private static string PartyExtensionFile = ".pa";
+    private static readonly string PartyExtensionFile = ".pa";
 
     private static void Main(string[] args)
     {
-        if (args.Length > 1)
-        {
-            Console.WriteLine("Usage: party <script.pa>");
-            Environment.Exit(ExitCodes.Usage);
-        }
-        else if (args.Length == 1)
-        {
-            RunFile(args[0]);
-        }
-        else
+        if (args.Length == 0)
         {
             RunRepl();
         }
+        else
+        {
+            var arg1 = args[0];
+
+            if (!Arguments.Listing.Any(x => x == arg1))
+            {
+                RunFile(arg1);
+            }
+            else
+            {
+                if (arg1 == Arguments.HelpShortOption || arg1 == Arguments.HelpLongOption)
+                {
+                    Console.WriteLine("Usage: party [OPTIONS] SCRIPT");
+                    Environment.Exit(ExitCodes.Success);
+                }
+
+                RunFile(args[1], arg1);
+            }
+        }
     }
 
-    private static void RunFile(string filePath)
+    private static void RunFile(string filePath, params string[] arguments)
     {
         var file = new FileInfo(filePath);
         if (!file.Exists)
@@ -41,10 +52,12 @@ internal class Program
 
         var input = File.ReadAllText(file.FullName);
 
-        RunInput(input);
+        RunInput(input, arguments);
 
         if (Diagnostics.HadError)
+        {
             Environment.Exit(ExitCodes.DataErr);
+        }
     }
 
     private static void RunRepl()
@@ -63,15 +76,25 @@ internal class Program
         }
     }
 
-    private static void RunInput(string source)
+    private static void RunInput(string source, params string[] args)
     {
         var lexer = new Lexer(source);
 
         var tokens = lexer.ScanTokens();
 
-        foreach (var token in tokens)
+        if (args.Any(arg => arg == Arguments.AstShortOption || arg == Arguments.AstLongOption))
         {
-            Console.WriteLine(token);
+            var expr = new Binary(
+                new Unary(
+                    new Token(TokenTypes.MINUS, "-", 1),
+                    new Literal(123)
+                ),
+                new Token(TokenTypes.STAR, "*", 1),
+                new Grouping(new Literal(45.67))
+            );
+
+            var visitor = new AstPrinterVisitor();
+            AstPrinter.Execute(visitor, expr);
         }
     }
 }

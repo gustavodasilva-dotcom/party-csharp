@@ -1,8 +1,13 @@
 namespace Party.Constants;
 
+/// <summary>
+/// Exit codes reported by CLI tool.
+/// </summary>
 internal static class ExitCodes
 {
-    public static int Usage = 64;
+    public const int Success = 0;
 
-    public static int DataErr = 65;
+    public const int Usage = 64;
+
+    public const int DataErr = 65;
 }
