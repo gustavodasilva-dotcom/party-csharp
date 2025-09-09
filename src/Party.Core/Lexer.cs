@@ -75,16 +75,11 @@ public sealed class Lexer(string source)
                 break;
             case Lexemes.ForwardSlash:
                 if (Match(Lexemes.ForwardSlash))
-                {
-                    while (Peek() != '\n' && !IsAtEnd())
-                    {
-                        Advance();
-                    }
-                }
+                    while (Peek() != '\n' && !IsAtEnd()) Advance();
+                else if (Match(Lexemes.Star))
+                    ScanBlockComment();
                 else
-                {
                     AddToken(TokenTypes.FORWARD_SLASH);
-                }
                 break;
             case Lexemes.WhiteSpace:
             case Lexemes.CarriageReturn:
@@ -111,16 +106,41 @@ public sealed class Lexer(string source)
         }
     }
 
+    private void ScanBlockComment()
+    {
+        while (Peek() != Lexemes.Star || PeekNext() != Lexemes.ForwardSlash)
+        {
+            if (Peek() == Lexemes.LineFeed) Line++;
+
+            if (IsAtEnd()) break;
+
+            char c = Advance();
+
+            if (c == Lexemes.ForwardSlash && Peek() == Lexemes.Star)
+                ScanBlockComment();
+        }
+
+        if (Peek() != Lexemes.Star && PeekNext() != Lexemes.ForwardSlash)
+        {
+            Diagnostics.EmitError(Line, "Unterminated block comment.");
+            return;
+        }
+
+        // Consumes remaining star (*).
+        Advance();
+
+        // Consumes remaining forward slash (/).
+        Advance();
+    }
+
     private void ScanIdentifier()
     {
         while (IsAlphaNumeric(Peek())) Advance();
 
-        var text = _source.Substring(Start, Current - Start);
+        var text = _source[Start..Current];
 
         if (!Identifiers.Keywords.TryGetValue(text, out TokenTypes type))
-        {
             type = TokenTypes.IDENTIFIER;
-        }
 
         AddToken(type);
     }
@@ -213,7 +233,7 @@ public sealed class Lexer(string source)
 
     private void AddToken(TokenTypes type, object? literal)
     {
-        var text = _source.Substring(Start, Current - Start);
+        var text = _source[Start..Current];
 
         _tokens.Add(new Token(type, text, literal, Line));
     }
