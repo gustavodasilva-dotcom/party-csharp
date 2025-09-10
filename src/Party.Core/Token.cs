@@ -1,4 +1,4 @@
-namespace Party.Core;
+﻿namespace Party.Core;
 
 public sealed class Token(TokenTypes type, string lexeme, object? literal, int line)
 {

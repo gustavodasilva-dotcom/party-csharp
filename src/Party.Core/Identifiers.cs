@@ -1,4 +1,4 @@
-namespace Party.Core;
+﻿namespace Party.Core;
 
 internal static class Identifiers
 {

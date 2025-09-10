@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 
 namespace Party.Core.Expressions;
 
@@ -26,7 +26,7 @@ public sealed class AstPrinterVisitor : IExprVisitor<string>
 
         builder.Append('(').Append(name);
 
-        foreach (Expr expr in exprs)
+        foreach (var expr in exprs)
         {
             builder.Append(' ');
             builder.Append(expr.Accept(this));

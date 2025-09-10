@@ -1,4 +1,4 @@
-namespace Party.Constants;
+﻿namespace Party.Constants;
 
 /// <summary>
 /// Arguments accepted by the CLI tool.

@@ -1,4 +1,4 @@
-namespace Party.Core.Expressions;
+﻿namespace Party.Core.Expressions;
 
 public sealed class Binary(Expr left, Token opr, Expr right) : Expr
 {

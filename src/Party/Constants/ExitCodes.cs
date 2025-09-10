@@ -1,4 +1,4 @@
-namespace Party.Constants;
+﻿namespace Party.Constants;
 
 /// <summary>
 /// Exit codes reported by CLI tool.

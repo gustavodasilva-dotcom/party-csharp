@@ -1,16 +1,1 @@
-// This is a comment
-
-(( )) / * % < <= > >= == = ! != . ; && || sample
-
-class else false function for if null print return super this true var while // Another comment
-
-"Hello world!" 1 1.5
-
-/*
- * comment
- * comment
- * /* comment */
- * // comment
- */
-
-var
+// just a comment for now

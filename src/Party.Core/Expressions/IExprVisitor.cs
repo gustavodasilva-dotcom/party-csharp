@@ -1,4 +1,4 @@
-namespace Party.Core.Expressions;
+﻿namespace Party.Core.Expressions;
 
 public interface IExprVisitor<T>
 {

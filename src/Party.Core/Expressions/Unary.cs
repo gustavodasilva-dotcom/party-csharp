@@ -1,4 +1,4 @@
-namespace Party.Core.Expressions;
+﻿namespace Party.Core.Expressions;
 
 public sealed class Unary(Token opr, Expr right) : Expr
 {

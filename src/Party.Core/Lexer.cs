@@ -1,30 +1,30 @@
-namespace Party.Core;
+﻿namespace Party.Core;
 
 public sealed class Lexer(string source)
 {
     private readonly string _source = source;
     private readonly List<Token> _tokens = [];
 
-    private int Start = 0;
-    private int Current = 0;
-    private int Line = 1;
+    private int _start = 0;
+    private int _current = 0;
+    private int _line = 1;
 
     public List<Token> ScanTokens()
     {
         while (!IsAtEnd())
         {
-            Start = Current;
+            _start = _current;
             ScanToken();
         }
 
-        _tokens.Add(new Token(TokenTypes.EOF, "", Line));
+        _tokens.Add(new Token(TokenTypes.EOF, "", _line));
 
         return _tokens;
     }
 
     private void ScanToken()
     {
-        char c = Advance();
+        var c = Advance();
 
         switch (c)
         {
@@ -86,7 +86,7 @@ public sealed class Lexer(string source)
             case Lexemes.Tab:
                 break;
             case Lexemes.LineFeed:
-                Line++;
+                _line++;
                 break;
             case Lexemes.DoubleQuotes:
                 ScanString();
@@ -101,7 +101,7 @@ public sealed class Lexer(string source)
                 else if (IsAlpha(c))
                     ScanIdentifier();
                 else
-                    Diagnostics.EmitError(Line, "Unexpected character.");
+                    Diagnostics.EmitError(_line, "Unexpected character.");
                 break;
         }
     }
@@ -110,13 +110,13 @@ public sealed class Lexer(string source)
     {
         while (Peek() != Lexemes.Star || PeekNext() != Lexemes.ForwardSlash)
         {
-            if (Peek() == Lexemes.LineFeed) Line++;
+            if (Peek() == Lexemes.LineFeed) _line++;
 
             // Safely unwinds the recursion (and the loop) at the end of the file
             // in case the end comment mark (*/) is missing.
             if (IsAtEnd()) break;
 
-            char c = Advance();
+            var c = Advance();
 
             // Recursively scans nested block comments.
             if (c == Lexemes.ForwardSlash && Peek() == Lexemes.Star)
@@ -125,7 +125,7 @@ public sealed class Lexer(string source)
 
         if (Peek() != Lexemes.Star && PeekNext() != Lexemes.ForwardSlash)
         {
-            Diagnostics.EmitError(Line, "Unterminated block comment.");
+            Diagnostics.EmitError(_line, "Unterminated block comment.");
             return;
         }
 
@@ -140,9 +140,9 @@ public sealed class Lexer(string source)
     {
         while (IsAlphaNumeric(Peek())) Advance();
 
-        var text = _source[Start..Current];
+        var text = _source[_start.._current];
 
-        if (!Identifiers.Keywords.TryGetValue(text, out TokenTypes type))
+        if (!Identifiers.Keywords.TryGetValue(text, out var type))
             type = TokenTypes.IDENTIFIER;
 
         AddToken(type);
@@ -160,28 +160,28 @@ public sealed class Lexer(string source)
         }
 
         AddToken(
-            TokenTypes.NUMBER, double.Parse(_source[Start..Current]));
+            TokenTypes.NUMBER, double.Parse(_source[_start.._current]));
     }
 
     private void ScanString()
     {
         while (Peek() != '"' && !IsAtEnd())
         {
-            if (Peek() == '\n') Line++;
+            if (Peek() == '\n') _line++;
 
             Advance();
         }
 
         if (IsAtEnd())
         {
-            Diagnostics.EmitError(Line, "Unterminated string.");
+            Diagnostics.EmitError(_line, "Unterminated string.");
             return;
         }
 
         Advance();
 
         // Because it has to cut off the last double quote ("), this length subtraction is -2.
-        var value = _source.Substring(Start + 1, Current - Start - 2);
+        var value = _source.Substring(_start + 1, _current - _start - 2);
 
         AddToken(TokenTypes.STRING, value);
     }
@@ -203,43 +203,43 @@ public sealed class Lexer(string source)
 
     private char PeekNext()
     {
-        if (Current + 1 >= _source.Length) return '\0';
+        if (_current + 1 >= _source.Length) return '\0';
 
-        return _source[Current + 1];
+        return _source[_current + 1];
     }
 
     private char Peek()
     {
         if (IsAtEnd()) return '\0';
 
-        return _source[Current];
+        return _source[_current];
     }
 
     private bool Match(char expected)
     {
         if (IsAtEnd()) return false;
-        if (_source[Current] != expected) return false;
+        if (_source[_current] != expected) return false;
 
-        Current++;
+        _current++;
 
         return true;
     }
 
     private char Advance()
     {
-        Current++;
+        _current++;
 
-        return _source[Current - 1];
+        return _source[_current - 1];
     }
 
     private void AddToken(TokenTypes type) => AddToken(type, null);
 
     private void AddToken(TokenTypes type, object? literal)
     {
-        var text = _source[Start..Current];
+        var text = _source[_start.._current];
 
-        _tokens.Add(new Token(type, text, literal, Line));
+        _tokens.Add(new Token(type, text, literal, _line));
     }
 
-    private bool IsAtEnd() => Current >= _source.Length;
+    private bool IsAtEnd() => _current >= _source.Length;
 }
