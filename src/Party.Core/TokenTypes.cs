@@ -11,6 +11,7 @@ public enum TokenTypes
     DOT,
     MINUS,
     PLUS,
+    COLON,
     SEMICOLON,
     FORWARD_SLASH,
     STAR,
@@ -25,6 +26,7 @@ public enum TokenTypes
     GREATER_EQUAL,
     LESS,
     LESS_EQUAL,
+    QUESTION,
 
     // Literals.
     IDENTIFIER,

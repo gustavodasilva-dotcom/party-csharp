@@ -2,6 +2,8 @@
 
 public interface IExprVisitor<T>
 {
+    T VisitTernary(Ternary expr);
+
     T VisitBinary(Binary expr);
 
     T VisitGrouping(Grouping expr);

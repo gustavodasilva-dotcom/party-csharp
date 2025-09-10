@@ -4,6 +4,32 @@ namespace Party.Core.Expressions;
 
 public sealed class AstPrinterVisitor : IExprVisitor<string>
 {
+    public string VisitTernary(Ternary expr)
+    {
+        var builder = new StringBuilder();
+
+        builder
+            .Append('(')
+            .Append("ternary")
+            .Append(' ')
+            .Append(expr.Condition.Accept(this))
+            .Append(' ')
+            .Append('?')
+            .Append(' ');
+
+        builder
+            .Append(expr.ThenBranch.Accept(this))
+            .Append(' ')
+            .Append(':')
+            .Append(' ');
+
+        builder
+            .Append(expr.ElseBranch.Accept(this))
+            .Append(')');
+
+        return builder.ToString();
+    }
+
     public string VisitBinary(Binary expr) =>
         Parenthesize(expr.Operator.Lexeme, expr.Left, expr.Right);
 

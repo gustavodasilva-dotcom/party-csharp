@@ -2,7 +2,9 @@
 
 |               |           |
 |---------------|-----------|
-| expression    | → *equality* ; |
+| expression    | → *comma* ; |
+| comma         | → *ternary* ( `,` *ternary* )* ; |
+| ternary       | → *equality* ( `?` *expression* `:` *ternary* )? ; |
 | equality      | → *comparison* ( ( `!=` \| `==` ) *comparison* )* ; |
 | comparison    | → *term* ( ( `>` \| `>=` \| `<` \| `<=` ) *term* )* ; |
 | term          | → *factor* ( ( `-` \| `+` ) *factor* )* ; |

@@ -21,7 +21,42 @@ public sealed class Parser(List<Token> tokens)
         }
     }
 
-    private Expr ParseExpression() => ParseEquality();
+    private Expr ParseExpression() => ParseComma();
+
+    private Expr ParseComma()
+    {
+        // The comma operator is a binary expression,
+        // so this is also the left-hand-side expression.
+        var expr = ParseTernary();
+
+        while (Match(TokenTypes.COMMA))
+        {
+            var opr = Previous();
+            var right = ParseTernary();
+            expr = new Binary(expr, opr, right);
+        }
+
+        return expr;
+    }
+
+    private Expr ParseTernary()
+    {
+        // In a ternary expression, this is also the condition.
+        var expr = ParseEquality();
+
+        if (Match(TokenTypes.QUESTION))
+        {
+            var thenOperator = Previous();
+            var thenBranch = ParseExpression();
+
+            var elseOpr = Consume(TokenTypes.COLON, "Expected ':' after expression.");
+            var elseBranch = ParseTernary();
+
+            expr = new Ternary(expr, thenOperator, thenBranch, elseOpr, elseBranch);
+        }
+
+        return expr;
+    }
 
     private Expr ParseEquality()
     {

@@ -26,6 +26,8 @@ internal static class Lexemes
 
     public const char Plus = '+';
 
+    public const char Colon = ':';
+
     public const char Semicolon = ';';
 
     public const char ForwardSlash = '/';
@@ -41,6 +43,8 @@ internal static class Lexemes
     public const char Less = '<';
 
     public const char Greater = '>';
+
+    public const char Question = '?';
 
     public const char DoubleQuotes = '"';
 

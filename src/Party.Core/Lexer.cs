@@ -52,6 +52,9 @@ public sealed class Lexer(string source)
             case Lexemes.Plus:
                 AddToken(TokenTypes.PLUS);
                 break;
+            case Lexemes.Colon:
+                AddToken(TokenTypes.COLON);
+                break;
             case Lexemes.Semicolon:
                 AddToken(TokenTypes.SEMICOLON);
                 break;
@@ -72,6 +75,9 @@ public sealed class Lexer(string source)
                 break;
             case Lexemes.Greater:
                 AddToken(Match(Lexemes.Equal) ? TokenTypes.GREATER_EQUAL : TokenTypes.GREATER);
+                break;
+            case Lexemes.Question:
+                AddToken(TokenTypes.QUESTION);
                 break;
             case Lexemes.ForwardSlash:
                 if (Match(Lexemes.ForwardSlash))
