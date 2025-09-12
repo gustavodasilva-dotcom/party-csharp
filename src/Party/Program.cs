@@ -117,8 +117,8 @@ internal class Program
 
         if (args.Any(arg => arg == Arguments.AstShortOption || arg == Arguments.AstLongOption))
         {
-            var visitor = new AstPrinterVisitor();
-            AstPrinter.Execute(visitor, expression!);
+            var printer = new AstPrinter();
+            printer.Print(expression!);
         }
 
         if (Diagnostics.HadError) return;
