@@ -11,4 +11,6 @@ public interface IExprVisitor<T>
     T VisitLiteral(Literal expr);
 
     T VisitUnary(Unary expr);
+
+    T VisitDeadLeaf();
 }

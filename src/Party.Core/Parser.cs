@@ -25,9 +25,25 @@ public sealed class Parser(List<Token> tokens)
 
     private Expr ParseComma()
     {
-        // The comma operator is a binary expression,
-        // so this is also the left-hand-side expression.
-        var expr = ParseTernary();
+        Expr expr;
+
+        // Checks if an expression starts with a comma operator.
+        if (Match(TokenTypes.COMMA))
+        {
+            // If so, reports an error.
+            Diagnostics.EmitError(Previous().Line, "Expected expression before operator.");
+
+            // Parses the right-hand-side operand and discards it.
+            ParseTernary();
+
+            // Symbolizes a poor binary expression.
+            expr = new DeadLeaf();
+        }
+        else
+        {
+            // The comma operator is a binary expression, so this is also the left-hand-side operand.
+            expr = ParseTernary();
+        }
 
         while (Match(TokenTypes.COMMA))
         {
@@ -60,8 +76,25 @@ public sealed class Parser(List<Token> tokens)
 
     private Expr ParseEquality()
     {
-        // This is also the left-hand-side expression of binary expression.
-        var expr = ParseComparison();
+        Expr expr;
+
+        // Checks if an expression starts with one of the equality operators.
+        if (Match(TokenTypes.EXCLAMATION_EQUAL, TokenTypes.EQUAL_EQUAL))
+        {
+            // If so, reports an error.
+            Diagnostics.EmitError(Previous().Line, "Expected expression before operator.");
+
+            // Parses the right-hand-side operand and discards it.
+            ParseComparison();
+
+            // Symbolizes a poor binary expression.
+            expr = new DeadLeaf();
+        }
+        else
+        {
+            // Left-hand-side operand of a binary expression.
+            expr = ParseComparison();
+        }
 
         while (Match(TokenTypes.EXCLAMATION_EQUAL, TokenTypes.EQUAL_EQUAL))
         {
@@ -75,8 +108,24 @@ public sealed class Parser(List<Token> tokens)
 
     private Expr ParseComparison()
     {
-        // This is also the left-hand-side expression of binary expression.
-        var expr = ParseTerm();
+        Expr expr;
+
+        // Checks whether an expression starts with one of the following comparison operators.
+        if (Match(TokenTypes.GREATER, TokenTypes.GREATER_EQUAL, TokenTypes.LESS, TokenTypes.LESS_EQUAL))
+        {
+            Diagnostics.EmitError(Previous().Line, "Expected expression before operator.");
+
+            // Parses the right-hand-side operand and discards it.
+            ParseTerm();
+
+            // Symbolizes a poor binary expression.
+            expr = new DeadLeaf();
+        }
+        else
+        {
+            // Left-hand-side operand of a binary expression.
+            expr = ParseTerm();
+        }
 
         while (Match(TokenTypes.GREATER, TokenTypes.GREATER_EQUAL, TokenTypes.LESS, TokenTypes.LESS_EQUAL))
         {
@@ -105,7 +154,24 @@ public sealed class Parser(List<Token> tokens)
 
     private Expr ParseFactor()
     {
-        var expr = ParseUnary();
+        Expr expr;
+
+        // Checks whether an expression starts with one of the following operators.
+        if (Match(TokenTypes.FORWARD_SLASH, TokenTypes.STAR))
+        {
+            Diagnostics.EmitError(Previous().Line, "Expected expression before operator.");
+
+            // Parses the right-hand-side operand and discards it.
+            ParseUnary();
+
+            // Symbolizes a poor binary expression.
+            expr = new DeadLeaf();
+        }
+        else
+        {
+            // Left-hand-side operand of a binary expression.
+            expr = ParseUnary();
+        }
 
         while (Match(TokenTypes.FORWARD_SLASH, TokenTypes.STAR))
         {

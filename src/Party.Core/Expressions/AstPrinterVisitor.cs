@@ -46,6 +46,8 @@ public sealed class AstPrinterVisitor : IExprVisitor<string>
     public string VisitUnary(Unary expr) =>
         Parenthesize(expr.Operator.Lexeme, expr.Right);
 
+    public string VisitDeadLeaf() => Parenthesize("error");
+
     private string Parenthesize(string name, params Expr[] exprs)
     {
         var builder = new StringBuilder();

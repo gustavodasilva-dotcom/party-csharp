@@ -5,6 +5,10 @@
 /// </summary>
 internal static class Arguments
 {
+    public const string InteractiveShortOption = "-i";
+
+    public const string InteractiveLongOption = "--interactive";
+
     public const string HelpShortOption = "-h";
 
     public const string HelpLongOption = "--help";
@@ -15,6 +19,8 @@ internal static class Arguments
 
     public static readonly string[] Listing =
     [
+        InteractiveShortOption,
+        InteractiveLongOption,
         HelpShortOption,
         HelpLongOption,
         AstShortOption,
